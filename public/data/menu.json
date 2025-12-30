@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "category": "Cut",
+    "name": "Standard Cut",
+    "price": 6600,
+    "description": "カウンセリングから仕上げまで、丁寧に行います。シャンプー・ブロー込。"
+  },
+  {
+    "id": "2",
+    "category": "Color",
+    "name": "Full Color",
+    "price": 8800,
+    "description": "髪への負担を抑えたオーガニックカラーを使用。シャンプー・ブロー別。"
+  },
+  {
+    "id": "3",
+    "category": "Treatment",
+    "name": "Premium Treatment",
+    "price": 5500,
+    "description": "内部補修を行い、艶と潤いを与えます。"
+  },
+  {
+    "id": "4",
+    "category": "Spa",
+    "name": "Head Spa (30min)",
+    "price": 4400,
+    "description": "アロマオイルを使用したリラクゼーションスパ。"
+  }
+]
