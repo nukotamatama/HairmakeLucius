@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: title,
-    description: "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
+    description: siteInfo.metadata?.description ?? "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
   };
 }
 

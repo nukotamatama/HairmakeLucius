@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+
 import { MenuItem } from "@/types";
-import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+
 
 type MenuListProps = {
     menuItems: MenuItem[];
@@ -19,31 +18,9 @@ export function MenuList({ menuItems }: MenuListProps) {
     // Sort available categories based on the fixed order
     const categories = ORDERED_CATEGORIES.filter(cat => availableCategories.includes(cat));
 
-    // Fallback: Append any categories that might be in items but not in fixed list (e.g. legacy data)
+    // Fallback: Append any categories that might be in items but not in fixed list
     const extraCategories = availableCategories.filter(cat => !ORDERED_CATEGORIES.includes(cat));
     categories.push(...extraCategories);
-
-    // State for mobile tabs
-    const [activeCategory, setActiveCategory] = useState<string>(categories[0]);
-
-    // Scroll detection for gradients
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const [canScrollLeft, setCanScrollLeft] = useState(false);
-    const [canScrollRight, setCanScrollRight] = useState(true);
-
-    const checkScroll = () => {
-        if (scrollRef.current) {
-            const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-            setCanScrollLeft(scrollLeft > 0);
-            setCanScrollRight(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
-        }
-    };
-
-    useEffect(() => {
-        checkScroll();
-        window.addEventListener('resize', checkScroll);
-        return () => window.removeEventListener('resize', checkScroll);
-    }, [categories]);
 
     return (
         <section id="menu" className="py-20 md:py-32 bg-stone-50 border-t border-stone-100 min-h-screen">
@@ -57,75 +34,11 @@ export function MenuList({ menuItems }: MenuListProps) {
                     </div>
                 </div>
 
-                {/* Mobile: Sticky Category Tabs */}
-                <div className="md:hidden sticky top-20 z-40 bg-stone-50/95 backdrop-blur-sm -mx-4 mb-8 border-b border-stone-200/50">
-                    <div className="relative">
-                        {/* Left Scroll Hint */}
-                        <div
-                            className={cn(
-                                "absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-stone-50 via-stone-50/90 to-transparent pointer-events-none flex items-center justify-start pl-1 transition-opacity duration-300 z-10",
-                                canScrollLeft ? "opacity-100" : "opacity-0"
-                            )}
-                        >
-                            <div className="animate-pulse text-stone-400">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M15 18l-6-6 6-6" />
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div
-                            ref={scrollRef}
-                            onScroll={checkScroll}
-                            className="overflow-x-auto scrollbar-hide py-4 px-4"
-                        >
-                            <div className="flex gap-4 min-w-max">
-                                {categories.map((category) => (
-                                    <button
-                                        key={category}
-                                        onClick={() => {
-                                            setActiveCategory(category);
-                                        }}
-                                        className={cn(
-                                            "relative px-4 py-2 text-sm font-serif tracking-wider transition-colors whitespace-nowrap",
-                                            activeCategory === category ? "text-stone-900 font-medium" : "text-stone-400"
-                                        )}
-                                    >
-                                        {category}
-                                        {activeCategory === category && (
-                                            <motion.div
-                                                layoutId="activeTab"
-                                                className="absolute inset-0 bg-white rounded-full shadow-sm -z-10"
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                            />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Right Scroll Hint */}
-                        <div
-                            className={cn(
-                                "absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-stone-50 via-stone-50/90 to-transparent pointer-events-none flex items-center justify-end pr-1 transition-opacity duration-300 z-10",
-                                canScrollRight ? "opacity-100" : "opacity-0"
-                            )}
-                        >
-                            <div className="animate-pulse text-stone-400">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M9 18l6-6-6-6" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Content Area */}
-                <div className="hidden md:grid md:grid-cols-2 gap-16 md:gap-x-24 items-start">
-                    {/* Desktop: Show All in 2 Columns */}
+                {/* Content Area - Vertical Layout for both Mobile and Desktop */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-x-24 items-start">
                     {categories.map((category) => (
-                        <div key={category} className="space-y-8 break-inside-avoid">
-                            <h3 className="text-xl font-serif text-stone-800 border-b border-stone-300 pb-2 text-left">
+                        <div key={category} className="space-y-6 break-inside-avoid">
+                            <h3 className="text-xl font-serif text-stone-800 border-b border-stone-300 pb-2 text-left sticky top-20 bg-stone-50 z-10 md:static md:bg-transparent">
                                 {category}
                             </h3>
                             <ul className="space-y-6">
@@ -138,31 +51,6 @@ export function MenuList({ menuItems }: MenuListProps) {
                         </div>
                     ))}
                 </div>
-
-                {/* Mobile: Show Filtered Only */}
-                <div className="md:hidden min-h-[50vh]">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeCategory}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            <h3 className="text-2xl font-serif text-stone-800 mb-8 text-center hidden">
-                                {activeCategory}
-                            </h3>
-                            <ul className="space-y-8">
-                                {menuItems
-                                    .filter((item) => item.category === activeCategory)
-                                    .map((item) => (
-                                        <MenuItemRow key={item.id} item={item} />
-                                    ))}
-                            </ul>
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
-
             </div>
         </section>
     );

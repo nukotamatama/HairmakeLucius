@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { X } from "lucide-react";
 
@@ -68,35 +69,49 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                 )}
             </div>
 
-            {/* Fullscreen Image Modal (Light Theme) */}
-            {selectedImage && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 animate-in fade-in duration-200 backdrop-blur-sm"
-                    onClick={() => setSelectedImage(null)}
-                >
-                    <button
-                        className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        <X size={32} />
-                    </button>
 
-                    <div
-                        className="relative max-w-5xl max-h-[90vh] flex flex-col items-center"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <img
-                            src={selectedImage.image}
-                            alt={selectedImage.title}
-                            className="object-contain max-w-[95vw] max-h-[80vh] w-auto h-auto shadow-lg"
-                        />
-                        <div className="mt-6 text-center text-stone-800 space-y-2">
-                            <h3 className="font-serif text-xl md:text-2xl">{selectedImage.title}</h3>
-                            <p className="text-sm text-stone-600 font-light">{selectedImage.description}</p>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </section>
+
+            {/* Fullscreen Image Modal (Light Theme) */}
+            <AnimatePresence>
+                {
+                    selectedImage && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 backdrop-blur-sm"
+                            onClick={() => setSelectedImage(null)}
+                        >
+                            <button
+                                className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
+                                onClick={() => setSelectedImage(null)}
+                            >
+                                <X size={32} />
+                            </button>
+
+                            <motion.div
+                                initial={{ scale: 0.95, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.95, opacity: 0 }}
+                                transition={{ duration: 0.3, type: "spring", damping: 25, stiffness: 300 }}
+                                className="relative max-w-5xl max-h-[90vh] flex flex-col items-center"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <img
+                                    src={selectedImage.image}
+                                    alt={selectedImage.title}
+                                    className="object-contain max-w-[95vw] max-h-[80vh] w-auto h-auto shadow-lg"
+                                />
+                                <div className="mt-6 text-center text-stone-800 space-y-2">
+                                    <h3 className="font-serif text-xl md:text-2xl">{selectedImage.title}</h3>
+                                    <p className="text-sm text-stone-600 font-light">{selectedImage.description}</p>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )
+                }
+            </AnimatePresence >
+        </section >
     );
 }

@@ -200,6 +200,21 @@ export function SiteInfoEditor() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+
+            <Card>
+                <CardHeader><CardTitle>SEO / メタデータ</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <Label>サイト説明文 (検索結果やリンク等のプレビューに表示されます)</Label>
+                        <Textarea
+                            className="h-24 bg-stone-50 border-stone-200"
+                            value={data.metadata?.description || ""}
+                            onChange={(e) => handleChange(['metadata', 'description'], e.target.value)}
+                            placeholder="サイトの魅力や特徴を簡潔に記述してください..."
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+        </div >
     );
 }

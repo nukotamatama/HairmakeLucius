@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function Header({ salonName, tel }: { salonName?: string, tel?: string }) {
+export function Header({ salonName, tel, reservationUrl }: { salonName?: string, tel?: string, reservationUrl?: string }) {
     const navItems = [
         { label: "コンセプト", sub: "CONCEPT", href: "#concept" },
         { label: "ギャラリー", sub: "GALLERY", href: "#gallery" },
@@ -18,7 +18,7 @@ export function Header({ salonName, tel }: { salonName?: string, tel?: string })
                 <div className="flex items-center">
                     <Link href="/" className="flex flex-col items-center leading-none group">
                         <span className="font-serif text-lg md:text-xl tracking-widest text-stone-800 group-hover:text-stone-600 transition-colors">
-                            {salonName || "Hairmake Lucias"}
+                            {salonName ?? "Hairmake Lucias"}
                         </span>
                     </Link>
                 </div>
@@ -43,7 +43,7 @@ export function Header({ salonName, tel }: { salonName?: string, tel?: string })
                             </div>
                         )}
                         <Button variant="primary" size="sm" asChild>
-                            <Link href="https://example.com/reserve" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center leading-tight py-1 px-6 h-10">
+                            <Link href={reservationUrl || "#"} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center leading-tight py-1 px-6 h-10">
                                 <span className="text-xs font-serif tracking-widest">Web予約</span>
                             </Link>
                         </Button>

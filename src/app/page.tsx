@@ -35,7 +35,7 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-stone-50 font-sans selection:bg-stone-200">
-      <Header salonName={siteInfo.access?.salonName} tel={siteInfo.access?.tel} />
+      <Header salonName={siteInfo.access?.salonName} tel={siteInfo.access?.tel} reservationUrl={siteInfo.access?.reservationUrl} />
       <Hero data={siteInfo.concept} images={siteInfo.heroImages} />
       <Concept data={siteInfo.concept} />
       <Gallery items={galleryItems} />

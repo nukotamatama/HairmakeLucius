@@ -38,8 +38,8 @@ export function Hero({ data, images = [] }: HeroProps) {
 
     // Slideshow Logic
     const [currentIndex, setCurrentIndex] = useState(0);
-    // Use default if no images provided
-    const displayImages = images.length > 0 ? images : [{ id: 'default', url: '/images/hero.png' }];
+    // Use raw images list, no fallback
+    const displayImages = images;
 
     useEffect(() => {
         if (displayImages.length <= 1) return;
@@ -54,23 +54,25 @@ export function Hero({ data, images = [] }: HeroProps) {
             {/* Parallax Background & Slideshow */}
             <motion.div style={{ y: yBg }} className="absolute inset-0 z-0 h-[120%] -top-[10%]">
                 <AnimatePresence mode="popLayout">
-                    <motion.div
-                        key={displayImages[currentIndex].id}
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 2.5, ease: "easeInOut" }}
-                        className="absolute inset-0"
-                    >
-                        <Image
-                            src={displayImages[currentIndex].url}
-                            alt="Salon Interior"
-                            fill
-                            className="object-cover object-center opacity-90"
-                            priority
-                            sizes="100vw"
-                        />
-                    </motion.div>
+                    {displayImages.length > 0 && (
+                        <motion.div
+                            key={displayImages[currentIndex].id}
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 2.5, ease: "easeInOut" }}
+                            className="absolute inset-0"
+                        >
+                            <Image
+                                src={displayImages[currentIndex].url}
+                                alt="Salon Interior"
+                                fill
+                                className="object-cover object-center opacity-90"
+                                priority
+                                sizes="100vw"
+                            />
+                        </motion.div>
+                    )}
                 </AnimatePresence>
                 <div className="absolute inset-0 bg-stone-100/10 mix-blend-overlay z-10" />
             </motion.div>
