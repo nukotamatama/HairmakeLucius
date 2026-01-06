@@ -1,5 +1,4 @@
-import { promises as fs } from "fs";
-import path from "path";
+
 import { Header } from "@/components/layout/Header";
 import { Hero } from "@/components/features/home/Hero";
 import { Concept } from "@/components/features/home/Concept";
@@ -11,23 +10,10 @@ import { Staff } from "@/components/features/home/Staff";
 import { SalonSpace } from "@/components/features/home/SalonSpace";
 import { FAQ } from "@/components/features/home/FAQ";
 import { MenuItem } from "@/types";
-import { getGallery, getStaff, getFAQ, getSiteInfo } from "@/actions/content";
-
-// Helper to fetch menu data (Legacy, but keeping for now or can use getMenuData from action if we move it there)
-// But we have actions/menu.ts for that if we want, or just read file here. 
-// Existing getMenuData reads file directly.
-async function getMenuData(): Promise<MenuItem[]> {
-  const filePath = path.join(process.cwd(), "public", "data", "menu.json");
-  try {
-    const jsonData = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(jsonData);
-  } catch (e) {
-    return [];
-  }
-}
+import { getGallery, getStaff, getFAQ, getSiteInfo, getMenuItems } from "@/actions/content";
 
 export default async function Home() {
-  const menuItems = await getMenuData();
+  const menuItems = await getMenuItems();
   const galleryItems = await getGallery();
   const staffItems = await getStaff();
   const faqItems = await getFAQ();

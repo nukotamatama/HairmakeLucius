@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { X } from "lucide-react";
@@ -17,6 +17,16 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
     const [showAll, setShowAll] = useState(false);
     const [selectedImage, setSelectedImage] = useState<GalleryItem | null>(null);
     const INITIAL_LIMIT = 6;
+
+    // Scroll Lock
+    useEffect(() => {
+        if (selectedImage) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
+    }, [selectedImage]);
 
     if (!items || items.length === 0) return null;
 
@@ -39,7 +49,10 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                             className="group cursor-pointer"
                             onClick={() => setSelectedImage(style)}
                         >
-                            <div className="relative aspect-[3/4] overflow-hidden bg-stone-200 mb-3 md:mb-6">
+                            <motion.div
+                                layoutId={`gallery-image-${style.id}`}
+                                className="relative aspect-[3/4] overflow-hidden bg-stone-200 mb-3 md:mb-6"
+                            >
                                 <Image
                                     src={style.image}
                                     alt={style.title}
@@ -48,7 +61,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                                     sizes="(max-width: 768px) 50vw, 33vw"
                                 />
                                 <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-500" />
-                            </div>
+                            </motion.div>
                             <div className="text-center space-y-1 md:space-y-2">
                                 <h3 className="font-serif text-sm md:text-xl text-stone-800">{style.title}</h3>
                                 <p className="text-[10px] md:text-xs text-stone-500 tracking-wider font-light truncate px-2">{style.description}</p>
@@ -73,45 +86,51 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
 
             {/* Fullscreen Image Modal (Light Theme) */}
             <AnimatePresence>
-                {
-                    selectedImage && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 backdrop-blur-sm"
+                {selectedImage && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 backdrop-blur-sm"
+                        onClick={() => setSelectedImage(null)}
+                    >
+                        <button
+                            className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
                             onClick={() => setSelectedImage(null)}
                         >
-                            <button
-                                className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
-                                onClick={() => setSelectedImage(null)}
-                            >
-                                <X size={32} />
-                            </button>
+                            <X size={32} />
+                        </button>
 
+                        <div
+                            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center pointer-events-none"
+                        >
                             <motion.div
-                                initial={{ scale: 0.95, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0.95, opacity: 0 }}
-                                transition={{ duration: 0.3, type: "spring", damping: 25, stiffness: 300 }}
-                                className="relative max-w-5xl max-h-[90vh] flex flex-col items-center"
-                                onClick={(e) => e.stopPropagation()}
+                                layoutId={`gallery-image-${selectedImage.id}`}
+                                className="relative shadow-lg pointer-events-auto"
                             >
                                 <img
                                     src={selectedImage.image}
                                     alt={selectedImage.title}
-                                    className="object-contain max-w-[95vw] max-h-[80vh] w-auto h-auto shadow-lg"
+                                    className="object-contain max-w-[95vw] max-h-[80vh] w-auto h-auto"
                                 />
-                                <div className="mt-6 text-center text-stone-800 space-y-2">
-                                    <h3 className="font-serif text-xl md:text-2xl">{selectedImage.title}</h3>
-                                    <p className="text-sm text-stone-600 font-light">{selectedImage.description}</p>
-                                </div>
                             </motion.div>
-                        </motion.div>
-                    )
-                }
-            </AnimatePresence >
-        </section >
+
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ delay: 0.4, duration: 0.3 }}
+                                className="mt-6 text-center text-stone-800 space-y-2 pointer-events-auto"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <h3 className="font-serif text-xl md:text-2xl">{selectedImage.title}</h3>
+                                <p className="text-sm text-stone-600 font-light">{selectedImage.description}</p>
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </section>
     );
 }

@@ -13,7 +13,7 @@ import { SalonSpaceEditor } from "@/components/features/admin/SalonSpaceEditor";
 import { AdminProvider } from "@/components/features/admin/AdminContext";
 import { SaveBar } from "@/components/features/admin/SaveBar";
 
-import { getGallery, getStaff, getFAQ, getSiteInfo, getMenu } from "@/actions/content";
+import { getGallery, getStaff, getFAQ, getSiteInfo, getMenuItems } from "@/actions/content";
 
 export default async function DashboardPage() {
     const session = await auth();
@@ -25,7 +25,7 @@ export default async function DashboardPage() {
 
     // Fetch ALL data server-side
     const [menu, gallery, staff, faq, siteInfo] = await Promise.all([
-        getMenu(),
+        getMenuItems(),
         getGallery(),
         getStaff(),
         getFAQ(),
