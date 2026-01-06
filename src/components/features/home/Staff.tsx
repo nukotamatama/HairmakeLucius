@@ -49,7 +49,7 @@ export function Staff({ items }: { items: StaffItem[] }) {
                                     <h3 className="font-serif text-2xl text-stone-800 group-hover:tracking-wider transition-all duration-500">{staff.name}</h3>
                                 </div>
                                 <div className="hidden md:block w-8 h-[1px] bg-stone-300 group-hover:w-16 transition-all duration-500" />
-                                <p className="text-sm text-stone-600 leading-loose font-light md:opacity-40 md:group-hover:opacity-100 transition-opacity duration-500">
+                                <p className="hidden md:block text-sm text-stone-600 leading-loose font-light md:opacity-40 md:group-hover:opacity-100 transition-opacity duration-500">
                                     {staff.message}
                                 </p>
 
