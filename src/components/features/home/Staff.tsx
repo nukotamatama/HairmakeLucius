@@ -3,11 +3,12 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-id: string;
-name: string;
-role: string;
-image: string;
-message ?: string;
+type StaffItem = {
+    id: string;
+    name: string;
+    role: string;
+    image: string;
+    message?: string;
 };
 
 export function Staff({ items }: { items: StaffItem[] }) {
