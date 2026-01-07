@@ -20,6 +20,7 @@ const notoSansJP = Noto_Sans_JP({
 export async function generateMetadata(): Promise<Metadata> {
   const siteInfo = await getSiteInfo();
   const title = siteInfo.access?.salonName || "Hairmake Lucias";
+  const heroImage = siteInfo.heroImages?.[0]?.url;
 
   return {
     title: title,
@@ -30,11 +31,16 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: title,
       locale: 'ja_JP',
       type: 'website',
+      images: heroImage ? [{ url: heroImage }] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title: title,
       description: siteInfo.metadata?.description ?? "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
+      images: heroImage ? [heroImage] : [],
+    },
+    verification: {
+      google: "FBlj63LuxqPUteDdVrL1WMoPTWtR5OINliqIs3y5KSU",
     },
   };
 }
