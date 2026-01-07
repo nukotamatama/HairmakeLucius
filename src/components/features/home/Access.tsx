@@ -63,13 +63,14 @@ export function Access({ data }: { data?: AccessData }) {
                     {/* Map */}
                     <div className="w-full aspect-square md:aspect-video bg-stone-100 relative transition-all duration-500 order-1 md:order-2">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.6784358971!2d139.7118!3d35.6628!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188b9c7b9c9f9f%3A0x1234567890abcdef!2sOmotesando!5e0!3m2!1sja!2sjp!4v1600000000000!5m2!1sja!2sjp"
+                            src={`https://maps.google.com/maps?q=${encodeURIComponent(salonName + " " + address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
                             width="100%"
                             height="100%"
-                            style={{ border: 0 }}
+                            className="border-0"
                             allowFullScreen={false}
                             loading="lazy"
                             referrerPolicy="no-referrer-when-downgrade"
+                            title="Google Map"
                         ></iframe>
                     </div>
                 </div>
