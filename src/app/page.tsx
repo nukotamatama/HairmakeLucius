@@ -12,6 +12,8 @@ import { FAQ } from "@/components/features/home/FAQ";
 import { MenuItem } from "@/types";
 import { getGallery, getStaff, getFAQ, getSiteInfo, getMenuItems } from "@/actions/content";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const menuItems = await getMenuItems();
   const galleryItems = await getGallery();
