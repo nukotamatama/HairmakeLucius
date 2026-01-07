@@ -1,13 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/lib/auth";
 import { getGallery, getStaff, getFAQ, getSiteInfo, getMenuItems } from "@/actions/content";
-import dynamic from "next/dynamic";
-
-// Dynamically import client component with SSR disabled to prevent Radix UI hydration mismatches
-const DashboardClient = dynamic(
-    () => import("./DashboardClient").then((mod) => mod.DashboardClient),
-    { ssr: false }
-);
+import { DashboardLoader } from "./DashboardLoader";
 
 export default async function DashboardPage() {
     const session = await auth();
@@ -30,7 +24,7 @@ export default async function DashboardPage() {
     const userIdentifier = process.env.SKIP_AUTH === "true" ? "開発者モード (認証なし)" : session?.user?.email;
 
     return (
-        <DashboardClient
+        <DashboardLoader
             initialData={initialData}
             userIdentifier={userIdentifier}
             canSignOut={process.env.SKIP_AUTH !== "true"}
