@@ -24,6 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: title,
     description: siteInfo.metadata?.description ?? "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
+    openGraph: {
+      title: title,
+      description: siteInfo.metadata?.description ?? "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
+      siteName: title,
+      locale: 'ja_JP',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: title,
+      description: siteInfo.metadata?.description ?? "日常に洗練された余白を。青山にある大人のためのプライベートサロン。",
+    },
   };
 }
 
