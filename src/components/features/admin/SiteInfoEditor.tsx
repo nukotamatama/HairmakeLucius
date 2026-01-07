@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
+import { upload } from '@vercel/blob/client';
 import Image from "next/image";
 
 export function SiteInfoEditor() {
@@ -40,26 +41,22 @@ export function SiteInfoEditor() {
         if (!file) return;
 
         try {
-            const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                method: "POST",
-                body: file,
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
             });
-            const result = await res.json();
-            if (result.url) {
+            if (newBlob.url) {
                 if (id) {
                     // Replace existing
-                    setHeroImages(heroImages.map(img => img.id === id ? { ...img, url: result.url } : img));
+                    setHeroImages(heroImages.map(img => img.id === id ? { ...img, url: newBlob.url } : img));
                 } else {
                     // Add new
-                    setHeroImages([...heroImages, { id: crypto.randomUUID(), url: result.url }]);
+                    setHeroImages([...heroImages, { id: crypto.randomUUID(), url: newBlob.url }]);
                 }
-            } else {
-                console.error("Upload failed: No URL returned", result);
-                alert("アップロードに失敗しました (URL取得不可)");
             }
         } catch (e) {
             console.error("Upload failed", e);
-            alert("アップロードに失敗しました (通信エラー)");
+            alert("アップロードに失敗しました: " + (e as Error).message);
         }
     };
 

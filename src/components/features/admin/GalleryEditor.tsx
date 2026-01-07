@@ -17,6 +17,7 @@ type GalleryItem = {
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
+import { upload } from '@vercel/blob/client';
 
 export function GalleryEditor() {
     const { state, updateSection } = useAdmin();
@@ -51,20 +52,16 @@ export function GalleryEditor() {
         if (!file) return;
 
         try {
-            const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                method: "POST",
-                body: file,
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
             });
-            const data = await res.json();
-            if (data.url) {
-                setItems(items.map(item => item.id === id ? { ...item, image: data.url } : item));
-            } else {
-                console.error("Upload failed: No URL returned", data);
-                alert("アップロードに失敗しました (URL取得不可)");
+            if (newBlob.url) {
+                setItems(items.map(item => item.id === id ? { ...item, image: newBlob.url } : item));
             }
         } catch (e) {
             console.error("Upload failed", e);
-            alert("アップロードに失敗しました (通信エラー)");
+            alert("アップロードに失敗しました (通信エラー: " + (e as Error).message + ")");
         }
     };
 

@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Label } from "@/components/ui/label";
 import Image from "next/image";
+import { upload } from '@vercel/blob/client';
 
 export function SalonSpaceEditor() {
     const { state, updateSection } = useAdmin();
@@ -43,20 +45,16 @@ export function SalonSpaceEditor() {
         if (!file) return;
 
         try {
-            const res = await fetch(`/api/upload?filename=${encodeURIComponent(file.name)}`, {
-                method: "POST",
-                body: file,
+            const newBlob = await upload(file.name, file, {
+                access: 'public',
+                handleUploadUrl: '/api/upload',
             });
-            const resData = await res.json();
-            if (resData.url) {
-                handleImageChange(index, 'src', resData.url);
-            } else {
-                console.error("Upload failed: No URL returned", resData);
-                alert("アップロードに失敗しました (URL取得不可)");
+            if (newBlob.url) {
+                handleImageChange(index, 'src', newBlob.url);
             }
         } catch (e) {
             console.error("Upload failed", e);
-            alert("アップロードに失敗しました (通信エラー)");
+            alert("アップロードに失敗しました: " + (e as Error).message);
         }
     };
 
