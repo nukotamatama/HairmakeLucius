@@ -44,6 +44,8 @@ export function SiteInfoEditor() {
             const newBlob = await upload(file.name, file, {
                 access: 'public',
                 handleUploadUrl: '/api/upload',
+                // @ts-ignore
+                addRandomSuffix: true,
             });
             if (newBlob.url) {
                 if (id) {
