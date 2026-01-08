@@ -19,7 +19,7 @@ const notoSansJP = Noto_Sans_JP({
 
 export async function generateMetadata(): Promise<Metadata> {
   const siteInfo = await getSiteInfo();
-  const title = siteInfo.access?.salonName || "Hairmake Lucias";
+  const title = siteInfo.access?.salonName || "Hairmake Lucius";
   const heroImage = siteInfo.heroImages?.[0]?.url;
 
   return {

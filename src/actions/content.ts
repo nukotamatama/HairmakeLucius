@@ -11,7 +11,7 @@ const DEFAULT_SITE_INFO: SiteInfo = {
     heroImages: [],
     concept: { title: "", subtitle: "", description: "" },
     access: {
-        salonName: "Hairmake Lucias",
+        salonName: "Hairmake Lucius",
         postalCode: "",
         address: "",
         tel: "",

@@ -14,7 +14,7 @@ export const config: NextAuthConfig = {
 
                 // Simple check
                 if (password && password === adminPassword) {
-                    return { id: "admin", name: "Administrator", email: "admin@hairmake-lucias.com" };
+                    return { id: "admin", name: "Administrator", email: "admin@hairmake-lucius.com" };
                 }
                 return null;
             }

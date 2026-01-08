@@ -18,7 +18,7 @@ export function Header({ salonName, tel, reservationUrl }: { salonName?: string,
                 <div className="flex items-center">
                     <Link href="/" className="flex flex-col items-center leading-none group">
                         <span className="font-serif text-lg md:text-xl tracking-widest text-stone-800 group-hover:text-stone-600 transition-colors">
-                            {salonName ?? "Hairmake Lucias"}
+                            {salonName ?? "Hairmake Lucius"}
                         </span>
                     </Link>
                 </div>
