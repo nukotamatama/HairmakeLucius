@@ -194,9 +194,15 @@ export function SiteInfoEditor() {
                             <Input value={data.access?.open?.weekend || ""} onChange={(e) => handleChange(['access', 'open', 'weekend'], e.target.value)} />
                         </div>
                     </div>
-                    <div>
-                        <Label>定休日</Label>
-                        <Input value={data.access?.open?.close || ""} onChange={(e) => handleChange(['access', 'open', 'close'], e.target.value)} />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <Label>定休日</Label>
+                            <Input value={data.access?.open?.close || ""} onChange={(e) => handleChange(['access', 'open', 'close'], e.target.value)} />
+                        </div>
+                        <div>
+                            <Label>最終入店</Label>
+                            <Input value={data.access?.open?.lastEntry || ""} onChange={(e) => handleChange(['access', 'open', 'lastEntry'], e.target.value)} />
+                        </div>
                     </div>
                 </CardContent>
             </Card>

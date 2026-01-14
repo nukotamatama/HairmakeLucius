@@ -8,6 +8,7 @@ type AccessData = {
         weekday: string;
         weekend: string;
         close: string;
+        lastEntry?: string;
     };
 };
 
@@ -17,7 +18,7 @@ export function Access({ data }: { data?: AccessData }) {
     const postalCode = data?.postalCode ?? "107-0062";
     const address = data?.address ?? "東京都港区南青山 5-1-1 Example Building 2F";
     const tel = data?.tel ?? "03-1234-5678";
-    const open = data?.open ?? { weekday: "11:00 - 20:00", weekend: "10:00 - 19:00", close: "火曜日" };
+    const open = data?.open ?? { weekday: "11:00 - 20:00", weekend: "10:00 - 19:00", close: "火曜日", lastEntry: "" };
 
     return (
         <section id="access" className="py-20 md:py-32 bg-white">
@@ -52,6 +53,12 @@ export function Access({ data }: { data?: AccessData }) {
                                     <span>土日祝</span>
                                     <span>{open.weekend}</span>
                                 </li>
+                                {open.lastEntry && (
+                                    <li className="flex justify-between w-full max-w-xs text-stone-500">
+                                        <span>最終入店</span>
+                                        <span>{open.lastEntry}</span>
+                                    </li>
+                                )}
                                 <li className="flex justify-between w-full max-w-xs text-stone-400">
                                     <span>定休日</span>
                                     <span>{open.close}</span>

@@ -53,7 +53,7 @@ export const siteSettings = pgTable('site_settings', {
         postalCode: string;
         address: string;
         tel: string;
-        open: { weekday: string; weekend: string; close: string };
+        open: { weekday: string; weekend: string; close: string; lastEntry: string };
         reservationUrl: string;
         menuCategories: string[];
     }>(),
