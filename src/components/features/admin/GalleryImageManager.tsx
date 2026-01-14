@@ -85,7 +85,7 @@ export function GalleryImageManager({ images, onChange }: Props) {
 
     return (
         <div className="space-y-4">
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                     <SortableContext items={items.map(i => i.id)} strategy={rectSortingStrategy}>
                         {items.map((item, index) => (

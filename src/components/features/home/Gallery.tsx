@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import useEmblaCarousel from 'embla-carousel-react';
 import { GalleryItem } from "@/types";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export function Gallery({ items }: { items: GalleryItem[] }) {
     const [showAll, setShowAll] = useState(false);
@@ -89,8 +90,10 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
     );
 }
 
+
 function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
-    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+    const [isZoomed, setIsZoomed] = useState(false);
+    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, watchDrag: !isZoomed });
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
 
@@ -141,14 +144,27 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                                 <div className="flex-[0_0_100%] min-w-0 relative flex items-center justify-center py-4 px-2" key={index}>
                                     <motion.div
                                         layoutId={index === 0 ? `gallery-image-${item.id}` : undefined}
-                                        className="relative shadow-lg max-h-[70vh] w-auto inline-block"
+                                        className="relative shadow-lg max-h-[70vh] w-auto inline-block z-40"
                                     >
-                                        <img
-                                            src={src}
-                                            alt={`${item.title} - ${index + 1}`}
-                                            className="object-contain max-w-full max-h-[70vh] w-auto h-auto mx-auto select-none drag-none"
-                                            style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
-                                        />
+                                        <TransformWrapper
+                                            initialScale={1}
+                                            minScale={1}
+                                            maxScale={4}
+                                            centerOnInit
+                                            onTransformed={(e) => setIsZoomed(e.state.scale > 1)}
+                                        >
+                                            <TransformComponent
+                                                wrapperStyle={{ width: '100%', height: '100%' }}
+                                                contentStyle={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyItems: 'center' }}
+                                            >
+                                                <img
+                                                    src={src}
+                                                    alt={`${item.title} - ${index + 1}`}
+                                                    className="object-contain max-w-full max-h-[70vh] w-auto h-auto mx-auto select-none drag-none"
+                                                    style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
+                                                />
+                                            </TransformComponent>
+                                        </TransformWrapper>
                                     </motion.div>
                                 </div>
                             ))}
@@ -159,13 +175,13 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                     {images.length > 1 && (
                         <>
                             <button
-                                className="hidden md:block absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                className="hidden md:block absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-50"
                                 onClick={(e) => { e.stopPropagation(); scrollPrev(); }}
                             >
                                 <ChevronLeft size={24} />
                             </button>
                             <button
-                                className="hidden md:block absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                className="hidden md:block absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-50"
                                 onClick={(e) => { e.stopPropagation(); scrollNext(); }}
                             >
                                 <ChevronRight size={24} />
