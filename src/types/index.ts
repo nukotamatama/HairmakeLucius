@@ -14,6 +14,7 @@ export type GalleryItem = {
     title: string;
     description: string;
     images: string[];
+    image?: string; // Deprecated: kept for backward compatibility checking
     category?: string;
 };
 
