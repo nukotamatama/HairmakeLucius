@@ -27,7 +27,8 @@ export const galleryItems = pgTable('gallery_items', {
     id: serial('id').primaryKey(),
     title: text('title').notNull(),
     description: text('description'),
-    image: text('image').notNull(),
+    images: jsonb('images').$type<string[]>(),
+    image: text('image'), // Deprecated, kept for backward compatibility until migration is complete
     category: text('category'),
     order: integer('order').default(0),
     createdAt: timestamp('created_at').defaultNow(),

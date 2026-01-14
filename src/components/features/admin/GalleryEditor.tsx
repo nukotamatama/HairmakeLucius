@@ -7,17 +7,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 
-type GalleryItem = {
-    id: string;
-    image: string;
-    title: string;
-    description: string;
-};
-
+import { GalleryItem } from "@/types";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, rectSortingStrategy } from '@dnd-kit/sortable';
 import { SortableItem } from './SortableItem';
 import { upload } from '@vercel/blob/client';
+import { GalleryImageManager } from "./GalleryImageManager";
 
 export function GalleryEditor() {
     const { state, updateSection } = useAdmin();
@@ -47,26 +42,10 @@ export function GalleryEditor() {
         }
     };
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
 
-        try {
-            const newBlob = await upload(file.name, file, {
-                access: 'public',
-                handleUploadUrl: '/api/upload',
-            });
-            if (newBlob.url) {
-                setItems(items.map(item => item.id === id ? { ...item, image: newBlob.url } : item));
-            }
-        } catch (e) {
-            console.error("Upload failed", e);
-            alert("アップロードに失敗しました (通信エラー: " + (e as Error).message + ")");
-        }
-    };
 
     const addItem = () => {
-        const newItem = { id: crypto.randomUUID(), image: "/images/hero.png", title: "New Style", description: "" };
+        const newItem = { id: crypto.randomUUID(), images: ["/images/hero.png"], title: "New Style", description: "" };
         setItems([...items, newItem]);
     };
 
@@ -75,21 +54,26 @@ export function GalleryEditor() {
         e.stopPropagation();
 
         const item = items.find(i => i.id === id);
-        if (item?.image?.startsWith('/images/')) {
-            try {
-                await fetch('/api/delete-image', {
-                    method: 'POST',
-                    body: JSON.stringify({ url: item.image })
-                });
-            } catch (err) {
-                console.error("Failed to delete image:", err);
+        if (item) {
+            const allImages = item.images || (item.image ? [item.image] : []);
+            for (const imgUrl of allImages) {
+                if (imgUrl && imgUrl.startsWith('/images/')) {
+                    try {
+                        await fetch('/api/delete-image', {
+                            method: 'POST',
+                            body: JSON.stringify({ url: imgUrl })
+                        });
+                    } catch (err) {
+                        console.error("Failed to delete image:", err);
+                    }
+                }
             }
         }
 
         setItems(items.filter(i => i.id !== id));
     };
 
-    const handleChange = (id: string, field: keyof GalleryItem, value: string) => {
+    const handleChange = (id: string, field: keyof GalleryItem, value: any) => {
         setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
     };
 
@@ -113,12 +97,11 @@ export function GalleryEditor() {
                         {items && items.map((item) => (
                             <SortableItem key={item.id} id={item.id}>
                                 <div className="p-4 space-y-4">
-                                    <div className="aspect-[3/4] w-full bg-stone-100 rounded-lg overflow-hidden relative group border border-stone-200">
-                                        <Image src={item.image} alt={item.title} fill className="object-cover transition-transform group-hover:scale-105" />
-                                        <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white">
-                                            <span className="font-bold text-sm">画像を変更</span>
-                                            <input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, item.id)} />
-                                        </label>
+                                    <div className="bg-white rounded-lg p-2 border border-stone-200">
+                                        <GalleryImageManager
+                                            images={item.images || (item.image ? [item.image] : [])}
+                                            onChange={(newImages) => handleChange(item.id, 'images', newImages)}
+                                        />
                                     </div>
 
                                     <div className="space-y-3">

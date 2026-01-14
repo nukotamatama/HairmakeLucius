@@ -4,14 +4,9 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { X } from "lucide-react";
-
-type GalleryItem = {
-    id: string;
-    image: string;
-    title: string;
-    description: string;
-};
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import useEmblaCarousel from 'embla-carousel-react';
+import { GalleryItem } from "@/types";
 
 export function Gallery({ items }: { items: GalleryItem[] }) {
     const [showAll, setShowAll] = useState(false);
@@ -54,7 +49,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
                                 className="relative aspect-[3/4] overflow-hidden bg-stone-200 mb-3 md:mb-6"
                             >
                                 <Image
-                                    src={style.image}
+                                    src={style.images?.[0] || "/images/hero.png"}
                                     alt={style.title}
                                     fill
                                     className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -87,50 +82,91 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
             {/* Fullscreen Image Modal (Light Theme) */}
             <AnimatePresence>
                 {selectedImage && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 backdrop-blur-sm"
-                        onClick={() => setSelectedImage(null)}
-                    >
-                        <button
-                            className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
-                            onClick={() => setSelectedImage(null)}
-                        >
-                            <X size={32} />
-                        </button>
-
-                        <div
-                            className="relative max-w-5xl max-h-[90vh] flex flex-col items-center pointer-events-none"
-                        >
-                            <motion.div
-                                layoutId={`gallery-image-${selectedImage.id}`}
-                                className="relative shadow-lg pointer-events-auto"
-                            >
-                                <img
-                                    src={selectedImage.image}
-                                    alt={selectedImage.title}
-                                    className="object-contain max-w-[95vw] max-h-[80vh] w-auto h-auto"
-                                />
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ delay: 0.4, duration: 0.3 }}
-                                className="mt-6 text-center text-stone-800 space-y-2 pointer-events-auto"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <h3 className="font-serif text-xl md:text-2xl">{selectedImage.title}</h3>
-                                <p className="text-sm text-stone-600 font-light">{selectedImage.description}</p>
-                            </motion.div>
-                        </div>
-                    </motion.div>
+                    <GalleryModal item={selectedImage} onClose={() => setSelectedImage(null)} />
                 )}
             </AnimatePresence>
         </section>
+    );
+}
+
+function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
+    const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+    // Handle both new images array and old image string for backward compatibility
+    const images = item.images && item.images.length > 0 ? item.images : (item.image ? [item.image] : []);
+
+    const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
+    const scrollNext = () => emblaApi && emblaApi.scrollNext();
+
+    return (
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-stone-50/95 p-4 backdrop-blur-sm"
+            onClick={onClose}
+        >
+            <button
+                className="absolute top-4 right-4 text-stone-800 p-2 hover:bg-stone-200 rounded-full transition-colors z-50"
+                onClick={onClose}
+            >
+                <X size={32} />
+            </button>
+
+            <div
+                className="relative w-full max-w-5xl max-h-[90vh] flex flex-col items-center pointer-events-none"
+                onClick={(e) => e.stopPropagation()}
+            >
+                {/* Carousel Container */}
+                <div className="relative w-full pointer-events-auto group">
+                    <div className="overflow-hidden" ref={emblaRef}>
+                        <div className="flex touch-pan-y">
+                            {images.map((src, index) => (
+                                <div className="flex-[0_0_100%] min-w-0 relative flex items-center justify-center py-4" key={index}>
+                                    <motion.div
+                                        layoutId={index === 0 ? `gallery-image-${item.id}` : undefined}
+                                        className="relative shadow-lg"
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`${item.title} - ${index + 1}`}
+                                            className="object-contain max-w-[95vw] max-h-[70vh] w-auto h-auto mx-auto"
+                                        />
+                                    </motion.div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Navigation Buttons */}
+                    {images.length > 1 && (
+                        <>
+                            <button
+                                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                onClick={(e) => { e.stopPropagation(); scrollPrev(); }}
+                            >
+                                <ChevronLeft size={24} />
+                            </button>
+                            <button
+                                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                onClick={(e) => { e.stopPropagation(); scrollNext(); }}
+                            >
+                                <ChevronRight size={24} />
+                            </button>
+                        </>
+                    )}
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-4 text-center text-stone-800 space-y-2 pointer-events-auto"
+                >
+                    <h3 className="font-serif text-xl md:text-2xl">{item.title}</h3>
+                    <p className="text-sm text-stone-600 font-light">{item.description}</p>
+                </motion.div>
+            </div>
+        </motion.div>
     );
 }

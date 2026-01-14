@@ -23,7 +23,6 @@ const DEFAULT_SITE_INFO: SiteInfo = {
     menuCategories: ["Cut", "Color", "Perm", "Treatment", "Spa", "Other"],
     metadata: { description: "" }
 };
-// Fix typo in default object above: description: images: [] -> description: "", images: []
 
 // --- Getters ---
 
@@ -67,7 +66,7 @@ export async function getGallery(): Promise<GalleryItem[]> {
             id: String(item.id),
             title: item.title,
             description: item.description || "",
-            image: item.image,
+            images: item.images || (item.image ? [item.image] : []),
             category: item.category || undefined
         }));
     } catch (e) {
@@ -153,7 +152,8 @@ export async function saveAllContent(data: {
             await tx.insert(galleryItems).values(data.gallery.map((item, i) => ({
                 title: item.title,
                 description: item.description,
-                image: item.image,
+                images: item.images,
+                image: item.images[0] || "",
                 category: item.category,
                 order: i
             })));

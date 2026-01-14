@@ -11,9 +11,9 @@ export type Category = "Cut" | "Color" | "Perm" | "Treatment" | "Spa" | "Other";
 
 export type GalleryItem = {
     id: string;
-    image: string;
     title: string;
     description: string;
+    images: string[];
     category?: string;
 };
 
