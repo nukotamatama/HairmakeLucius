@@ -91,6 +91,7 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
 }
 
 
+
 function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
     const [isZoomed, setIsZoomed] = useState(false);
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, watchDrag: !isZoomed });
@@ -152,6 +153,9 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                                             maxScale={4}
                                             centerOnInit
                                             onTransformed={(e) => setIsZoomed(e.state.scale > 1)}
+                                            doubleClick={{ disabled: false, mode: 'toggle' }}
+                                            panning={{ disabled: !isZoomed, velocityDisabled: true }}
+                                            wheel={{ step: 0.2 }}
                                         >
                                             <TransformComponent
                                                 wrapperStyle={{ width: '100%', height: '100%' }}
