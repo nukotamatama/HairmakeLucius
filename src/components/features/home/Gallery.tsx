@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -91,11 +91,27 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
 
 function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
+
     // Handle both new images array and old image string for backward compatibility
     const images = item.images && item.images.length > 0 ? item.images : (item.image ? [item.image] : []);
 
-    const scrollPrev = () => emblaApi && emblaApi.scrollPrev();
-    const scrollNext = () => emblaApi && emblaApi.scrollNext();
+    const onSelect = useCallback((api: any) => {
+        setSelectedIndex(api.selectedScrollSnap());
+    }, []);
+
+    useEffect(() => {
+        if (!emblaApi) return;
+
+        setScrollSnaps(emblaApi.scrollSnapList());
+        emblaApi.on('select', onSelect);
+        onSelect(emblaApi);
+    }, [emblaApi, onSelect]);
+
+    const scrollTo = useCallback((index: number) => emblaApi && emblaApi.scrollTo(index), [emblaApi]);
+    const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
+    const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
     return (
         <motion.div
@@ -122,15 +138,16 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                     <div className="overflow-hidden" ref={emblaRef}>
                         <div className="flex touch-pan-y">
                             {images.map((src, index) => (
-                                <div className="flex-[0_0_100%] min-w-0 relative flex items-center justify-center py-4" key={index}>
+                                <div className="flex-[0_0_100%] min-w-0 relative flex items-center justify-center py-4 px-2" key={index}>
                                     <motion.div
                                         layoutId={index === 0 ? `gallery-image-${item.id}` : undefined}
-                                        className="relative shadow-lg"
+                                        className="relative shadow-lg max-h-[70vh] w-auto inline-block"
                                     >
                                         <img
                                             src={src}
                                             alt={`${item.title} - ${index + 1}`}
-                                            className="object-contain max-w-[95vw] max-h-[70vh] w-auto h-auto mx-auto"
+                                            className="object-contain max-w-full max-h-[70vh] w-auto h-auto mx-auto select-none drag-none"
+                                            style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
                                         />
                                     </motion.div>
                                 </div>
@@ -142,17 +159,29 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                     {images.length > 1 && (
                         <>
                             <button
-                                className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                className="hidden md:block absolute left-2 md:left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                 onClick={(e) => { e.stopPropagation(); scrollPrev(); }}
                             >
                                 <ChevronLeft size={24} />
                             </button>
                             <button
-                                className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                className="hidden md:block absolute right-2 md:right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-stone-800 p-2 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity z-10"
                                 onClick={(e) => { e.stopPropagation(); scrollNext(); }}
                             >
                                 <ChevronRight size={24} />
                             </button>
+
+                            {/* Dots Indicator */}
+                            <div className="absolute -bottom-8 left-0 right-0 flex justify-center gap-2">
+                                {scrollSnaps.map((_, index) => (
+                                    <button
+                                        key={index}
+                                        className={`w-2 h-2 rounded-full transition-all ${index === selectedIndex ? "bg-stone-800 w-4" : "bg-stone-300 hover:bg-stone-400"
+                                            }`}
+                                        onClick={(e) => { e.stopPropagation(); scrollTo(index); }}
+                                    />
+                                ))}
+                            </div>
                         </>
                     )}
                 </div>
@@ -161,7 +190,7 @@ function GalleryModal({ item, onClose }: { item: GalleryItem; onClose: () => voi
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="mt-4 text-center text-stone-800 space-y-2 pointer-events-auto"
+                    className="mt-10 text-center text-stone-800 space-y-2 pointer-events-auto"
                 >
                     <h3 className="font-serif text-xl md:text-2xl">{item.title}</h3>
                     <p className="text-sm text-stone-600 font-light">{item.description}</p>
